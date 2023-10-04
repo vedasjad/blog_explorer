@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  Color cream = const Color(0xffDEB992);
-  Color green = const Color(0xff1BA098);
-  Color maroon = const Color(0xffA80038);
-  Color black = const Color(0xff051622);
+  Color text = const Color(0xffedeef2);
+  Color background = const Color(0xff1c1e20);
+  Color lightBackground = const Color(0xff23262b);
+  Color secondary = const Color(0xfff9545e);
 }

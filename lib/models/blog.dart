@@ -1,13 +1,22 @@
 import 'dart:convert';
 
+import 'package:hive/hive.dart';
+
+@HiveType(typeId: 1)
 class Blog {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String imageUrl;
+  @HiveField(2)
   final String title;
+  @HiveField(3)
+  final bool isFavourite;
   Blog({
     required this.id,
     required this.imageUrl,
     required this.title,
+    required this.isFavourite,
   });
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
@@ -24,6 +33,7 @@ class Blog {
       id: map["id"],
       imageUrl: map["image_url"],
       title: map["title"],
+      isFavourite: false,
     );
   }
 

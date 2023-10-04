@@ -38,6 +38,10 @@ dependencies:
   google_fonts:
   http: ^1.1.0
   flutter_inset_box_shadow: ^1.0.8
+  carousel_slider:
+  hive:
+  hive_flutter:
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
