@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 import '../../../common/colors.dart';
 import '../../../common/utils.dart';
 import '../../../models/blog.dart';
+import '../../../providers/bookmarked_list_provider.dart';
 import '../services/blog_services.dart';
 
 class BlogScreen extends StatefulWidget {
@@ -21,8 +22,7 @@ class BlogScreen extends StatefulWidget {
 
 class _BlogScreenState extends State<BlogScreen> {
   final BlogServices blogServices = BlogServices();
-  final blogsBox = Hive.box("blogs_box");
-  bool isBookmarked = false;
+  List<Blog> bookmarkedList = [];
   String blogText = '';
 
   @override
@@ -39,16 +39,13 @@ class _BlogScreenState extends State<BlogScreen> {
     setState(() {});
   }
 
-  toggleBookmark() async {
-    isBookmarked = !isBookmarked;
-    await blogsBox.delete(widget.blog.id);
-    await blogsBox.put(widget.blog.id, {
-      'title': widget.blog.title,
-      'imageUrl': widget.blog.imageUrl,
-      'isFavourite': isBookmarked,
-    });
-    setState(() {});
-    if (isBookmarked) {
+  toggleBookmark() {
+    bookmarkedList.contains(widget.blog)
+        ? Provider.of<BookmarkedListProvider>(context, listen: false)
+            .unMarkBlog(widget.blog)
+        : Provider.of<BookmarkedListProvider>(context, listen: false)
+            .bookmarkBlog(widget.blog);
+    if (bookmarkedList.contains(widget.blog)) {
       showSnackBar(context, 'Added to Bookmarks');
     } else {
       showSnackBar(context, 'Removed from Bookmarks');
@@ -57,9 +54,8 @@ class _BlogScreenState extends State<BlogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    isBookmarked = blogsBox.get(widget.blog.id)['isFavourite'];
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    bookmarkedList = Provider.of<BookmarkedListProvider>(context, listen: true)
+        .bookmarkedBlogsList;
     return Scaffold(
         backgroundColor: AppColors().background,
         resizeToAvoidBottomInset: true,
@@ -67,9 +63,7 @@ class _BlogScreenState extends State<BlogScreen> {
           scrolledUnderElevation: 3.0,
           elevation: 0,
           leading: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
+            onTap: () => Navigator.pop(context),
             child: Icon(
               Icons.arrow_back_ios_rounded,
               size: 25,
@@ -134,7 +128,7 @@ class _BlogScreenState extends State<BlogScreen> {
                                 GestureDetector(
                                   onTap: toggleBookmark,
                                   child: Icon(
-                                    (isBookmarked)
+                                    (bookmarkedList.contains(widget.blog))
                                         ? Icons.bookmark_added_rounded
                                         : Icons.bookmark_add_outlined,
                                     color: AppColors().text,

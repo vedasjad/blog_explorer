@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
         id: key,
         imageUrl: item['imageUrl'],
         title: item['title'],
-        isFavourite: item['isFavourite'],
       );
     }).toList();
     if (data.isEmpty) {
@@ -72,8 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(

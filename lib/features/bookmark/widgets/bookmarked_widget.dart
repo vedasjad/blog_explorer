@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../common/colors.dart';
@@ -22,17 +21,6 @@ class BookmarkedWidget extends StatefulWidget {
 }
 
 class _BookmarkedWidgetState extends State<BookmarkedWidget> {
-  final blogsBox = Hive.box("blogs_box");
-  deleteBlog() async {
-    await blogsBox.delete(widget.blog.id);
-    await blogsBox.put(widget.blog.id, {
-      'title': widget.blog.title,
-      'imageUrl': widget.blog.imageUrl,
-      'isFavourite': false,
-    });
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

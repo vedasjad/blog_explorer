@@ -11,12 +11,10 @@ class Blog {
   @HiveField(2)
   final String title;
   @HiveField(3)
-  final bool isFavourite;
   Blog({
     required this.id,
     required this.imageUrl,
     required this.title,
-    required this.isFavourite,
   });
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
@@ -33,7 +31,6 @@ class Blog {
       id: map["id"],
       imageUrl: map["image_url"],
       title: map["title"],
-      isFavourite: false,
     );
   }
 

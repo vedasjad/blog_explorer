@@ -43,6 +43,7 @@ dependencies:
   hive_flutter:
   shimmer: ^3.0.0
   flutter_dotenv: ^5.1.0
+  provider:
 
 dev_dependencies:
   flutter_test:

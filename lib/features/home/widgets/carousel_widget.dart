@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart'
     as inset;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common/colors.dart';
 import '../../../models/blog.dart';
@@ -55,42 +56,42 @@ class CarouselWidget extends StatelessWidget {
             child: Stack(
               alignment: Alignment.bottomLeft,
               children: [
-                // ClipRRect(
-                //   borderRadius: BorderRadius.circular(15),
-                //   child: Image.network(
-                //     imageUrl,
-                //     fit: BoxFit.cover,
-                //     width: screenWidth * 0.75,
-                //     height: screenHeight * 0.9,
-                //     loadingBuilder: (context, child, loadingProgress) {
-                //       if (loadingProgress == null) return child;
-                //       return Shimmer.fromColors(
-                //         baseColor: AppColors().background,
-                //         highlightColor: AppColors().lightBackground,
-                //         child: Container(
-                //           constraints: const BoxConstraints.expand(),
-                //           color: AppColors().lightBackground,
-                //         ),
-                //       );
-                //     },
-                //     errorBuilder: (context, child, loadingProgress) {
-                //       return Container(
-                //         constraints: const BoxConstraints.expand(),
-                //         color: AppColors().lightBackground,
-                //         child: Center(
-                //           child: Text(
-                //             'Image Not Found',
-                //             style: GoogleFonts.getFont(
-                //               'Montserrat',
-                //               fontSize: 30,
-                //               color: Colors.grey,
-                //             ),
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.network(
+                    blog.imageUrl,
+                    fit: BoxFit.cover,
+                    width: screenWidth * 0.75,
+                    height: screenHeight * 0.9,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Shimmer.fromColors(
+                        baseColor: AppColors().background,
+                        highlightColor: AppColors().lightBackground,
+                        child: Container(
+                          constraints: const BoxConstraints.expand(),
+                          color: AppColors().lightBackground,
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, child, loadingProgress) {
+                      return Container(
+                        constraints: const BoxConstraints.expand(),
+                        color: AppColors().lightBackground,
+                        child: Center(
+                          child: Text(
+                            'Image Not Found',
+                            style: GoogleFonts.getFont(
+                              'Montserrat',
+                              fontSize: 30,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 Container(
                   constraints: const BoxConstraints.expand(),
                   decoration: BoxDecoration(

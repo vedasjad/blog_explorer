@@ -1,8 +1,9 @@
 import 'dart:math';
 
+import 'package:blog_explorer/providers/bookmarked_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 import '../../../common/colors.dart';
 import '../../../models/blog.dart';
@@ -17,34 +18,15 @@ class BookmarkScreen extends StatefulWidget {
 
 class _BookmarkScreenState extends State<BookmarkScreen> {
   List<Blog> bookmarkedList = [];
-  final _blogsBox = Hive.box("blogs_box");
   @override
   void initState() {
     super.initState();
-    _fillBlogList();
-  }
-
-  void _fillBlogList() {
-    final blogList = _blogsBox.keys.map((key) {
-      final blog = _blogsBox.get(key);
-      return Blog(
-        id: key,
-        imageUrl: blog['imageUrl'],
-        title: blog['title'],
-        isFavourite: blog['isFavourite'],
-      );
-    }).toList();
-    for (Blog blog in blogList) {
-      if (blog.isFavourite == true) {
-        setState(() {
-          bookmarkedList.add(blog);
-        });
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    bookmarkedList = Provider.of<BookmarkedListProvider>(context, listen: true)
+        .bookmarkedBlogsList;
     return Scaffold(
       backgroundColor: AppColors().background,
       resizeToAvoidBottomInset: true,
@@ -118,7 +100,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                             backgroundColor: AppColors().secondary,
                             content:
                                 Text('Removed ${bookmarkedList[index].title}'),
-                            duration: const Duration(milliseconds: 250),
+                            duration: const Duration(milliseconds: 300),
                             action: SnackBarAction(
                               label: 'Undo',
                               onPressed: () => delete = false,
@@ -132,14 +114,9 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                     },
                     onDismissed: (direction) async {
                       if (direction == DismissDirection.endToStart) {
-                        bookmarkedList.removeAt(index);
-                        await _blogsBox.delete(bookmarkedList[index].id);
-                        await _blogsBox.put(bookmarkedList[index].id, {
-                          'title': bookmarkedList[index].title,
-                          'imageUrl': bookmarkedList[index].imageUrl,
-                          'isFavourite': false,
-                        });
-                        setState(() {});
+                        Provider.of<BookmarkedListProvider>(context,
+                                listen: false)
+                            .unMarkBlog(bookmarkedList[index]);
                       }
                     },
                     child: BookmarkedWidget(
