@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 
 import '../../../common/colors.dart';
 import '../../../models/blog.dart';
+import '../../bookmark/screens/bookmark_screen.dart';
 import '../widgets/blog_widget.dart';
 import '../widgets/carousel_widget.dart';
 
@@ -74,41 +75,45 @@ class _HomeScreenState extends State<HomeScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(
-          Icons.bookmark,
-          size: 25,
-          color: AppColors().secondary,
-        ),
-      ),
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        scrolledUnderElevation: 0,
+        scrolledUnderElevation: 3.0,
         elevation: 0,
-        title: Text(
-          'SCROLLERE',
-          style: GoogleFonts.getFont(
-            "Ubuntu",
-            color: appColors.secondary,
-          ),
+        title: const Text('SCROLLERE'),
+        titleTextStyle: GoogleFonts.getFont(
+          "Montserrat",
+          color: appColors.secondary,
         ),
         backgroundColor: appColors.background,
-        leading: Drawer(
-          backgroundColor: Colors.transparent,
-          child: Icon(
-            Icons.menu,
-            size: 25,
-            color: appColors.text,
-          ),
-        ),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Icon(
-              Icons.search,
-              size: 25,
-              color: appColors.text,
+            padding: const EdgeInsets.all(20.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BookmarkScreen(),
+                  ),
+                );
+              },
+              child: Icon(
+                Icons.bookmark_border_rounded,
+                size: 25,
+                color: appColors.text,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: GestureDetector(
+              onTap: () {},
+              child: Icon(
+                Icons.search,
+                size: 25,
+                color: appColors.text,
+              ),
             ),
           ),
         ],
@@ -137,13 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: 5,
                     itemBuilder: (BuildContext context, index, x) {
                       return CarouselWidget(
-                        imageUrl: blogList![index].imageUrl,
-                        title: blogList![index].title,
+                        blog: blogList![index],
                       );
                     },
                     options: CarouselOptions(
                       autoPlay: true,
                       enlargeCenterPage: true,
+                      scrollPhysics: const BouncingScrollPhysics(),
                     ),
                   ),
                 ),
@@ -155,22 +160,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: appColors.text,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.only(left: 25),
-                    shrinkWrap: true,
-                    itemCount: blogList!.length,
-                    semanticChildCount: 10,
-                    itemBuilder: (BuildContext context, index) {
-                      if (index < 5) return const SizedBox();
-                      return Container(
-                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                        child: BlogWidget(blog: blogList![index]),
-                      );
-                    },
-                  ),
+                ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
+                  shrinkWrap: true,
+                  itemCount: blogList!.length,
+                  semanticChildCount: 10,
+                  itemBuilder: (BuildContext context, index) {
+                    if (index < 5) return const SizedBox();
+                    return BlogWidget(blog: blogList![index]);
+                  },
                 ),
               ],
             ),
