@@ -22,7 +22,7 @@ class BlogScreen extends StatefulWidget {
 
 class _BlogScreenState extends State<BlogScreen> {
   final BlogServices blogServices = BlogServices();
-  List<Blog?> bookmarkedList = [];
+  List<Blog> bookmarkedList = [];
   String blogText = '';
 
   @override
@@ -41,9 +41,9 @@ class _BlogScreenState extends State<BlogScreen> {
 
   toggleBookmark() {
     bookmarkedList.contains(widget.blog)
-        ? Provider.of<BookmarkedListProvider>(context, listen: false)
+        ? Provider.of<BookmarksProvider>(context, listen: false)
             .unMarkBlog(widget.blog)
-        : Provider.of<BookmarkedListProvider>(context, listen: false)
+        : Provider.of<BookmarksProvider>(context, listen: false)
             .bookmarkBlog(widget.blog);
     if (bookmarkedList.contains(widget.blog)) {
       showSnackBar(context, 'Added to Bookmarks');
@@ -54,7 +54,7 @@ class _BlogScreenState extends State<BlogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bookmarkedList = Provider.of<BookmarkedListProvider>(context, listen: true)
+    bookmarkedList = Provider.of<BookmarksProvider>(context, listen: true)
         .bookmarkedBlogsList;
     return Scaffold(
         backgroundColor: AppColors().background,

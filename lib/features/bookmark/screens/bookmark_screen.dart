@@ -17,7 +17,7 @@ class BookmarkScreen extends StatefulWidget {
 }
 
 class _BookmarkScreenState extends State<BookmarkScreen> {
-  List<Blog?> bookmarkedList = [];
+  List<Blog> bookmarkedList = [];
   @override
   void initState() {
     super.initState();
@@ -25,7 +25,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bookmarkedList = Provider.of<BookmarkedListProvider>(context, listen: true)
+    bookmarkedList = Provider.of<BookmarksProvider>(context, listen: true)
         .bookmarkedBlogsList;
     return Scaffold(
       backgroundColor: AppColors().background,
@@ -116,11 +116,11 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                Provider.of<BookmarkedListProvider>(context,
+                                Provider.of<BookmarksProvider>(context,
                                         listen: false)
                                     .bookmarkedBlogsList
                                     .clear();
-                                Provider.of<BookmarkedListProvider>(context,
+                                Provider.of<BookmarksProvider>(context,
                                         listen: false)
                                     .clearBookmarks();
                                 Navigator.pop(context);
@@ -185,7 +185,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                           SnackBar(
                             backgroundColor: AppColors().secondary,
                             content:
-                                Text('Removed ${bookmarkedList[index]!.title}'),
+                                Text('Removed ${bookmarkedList[index].title}'),
                             duration: const Duration(milliseconds: 300),
                             action: SnackBarAction(
                               label: 'Undo',
@@ -200,13 +200,12 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                     },
                     onDismissed: (direction) async {
                       if (direction == DismissDirection.endToStart) {
-                        Provider.of<BookmarkedListProvider>(context,
-                                listen: false)
-                            .unMarkBlog(bookmarkedList[index]!);
+                        Provider.of<BookmarksProvider>(context, listen: false)
+                            .unMarkBlog(bookmarkedList[index]);
                       }
                     },
                     child: BlogWidget(
-                      blog: bookmarkedList[index]!,
+                      blog: bookmarkedList[index],
                     ),
                   );
                 },

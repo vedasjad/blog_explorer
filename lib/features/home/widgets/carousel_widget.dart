@@ -21,11 +21,11 @@ class CarouselWidget extends StatefulWidget {
 }
 
 class _CarouselWidgetState extends State<CarouselWidget> {
-  List<Blog?> bookmarkedList = [];
+  List<Blog> bookmarkedList = [];
 
   @override
   Widget build(BuildContext context) {
-    bookmarkedList = Provider.of<BookmarkedListProvider>(context, listen: true)
+    bookmarkedList = Provider.of<BookmarksProvider>(context, listen: true)
         .bookmarkedBlogsList;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -125,10 +125,10 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                           child: IconButton(
                             onPressed: () {
                               bookmarkedList.contains(widget.blog)
-                                  ? Provider.of<BookmarkedListProvider>(context,
+                                  ? Provider.of<BookmarksProvider>(context,
                                           listen: false)
                                       .unMarkBlog(widget.blog)
-                                  : Provider.of<BookmarkedListProvider>(context,
+                                  : Provider.of<BookmarksProvider>(context,
                                           listen: false)
                                       .bookmarkBlog(widget.blog);
                             },

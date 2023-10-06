@@ -13,6 +13,7 @@ Future main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(BlogAdapter());
   await Hive.openBox("blogs_box");
+  await Hive.openBox("bookmarksBox");
   await DotEnv().load(fileName: '.env');
   runApp(const MyApp());
 }
@@ -22,8 +23,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<BookmarkedListProvider>(
-      create: (context) => BookmarkedListProvider(),
+    return ChangeNotifierProvider<BookmarksProvider>(
+      create: (context) => BookmarksProvider(),
       child: MaterialApp(
         title: 'Scrollere',
         debugShowCheckedModeBanner: false,
