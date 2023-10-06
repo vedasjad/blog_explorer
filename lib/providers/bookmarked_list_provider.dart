@@ -3,18 +3,22 @@ import 'package:flutter/cupertino.dart';
 import '../models/blog.dart';
 
 class BookmarkedListProvider extends ChangeNotifier {
-  List<Blog> _bookmarkedBlogsBox = [];
-  // Box<Blog> _bookmarkedBlogsBox = Hive.box("bookmarkedBlogsBox");
+  List<Blog?> _bookmarkedBlogsList = [];
 
   void bookmarkBlog(Blog blog) {
-    _bookmarkedBlogsBox.add(blog);
+    _bookmarkedBlogsList.add(blog);
     notifyListeners();
   }
 
   void unMarkBlog(Blog blog) {
-    _bookmarkedBlogsBox.remove(blog);
+    _bookmarkedBlogsList.remove(blog);
     notifyListeners();
   }
 
-  List<Blog> get bookmarkedBlogsList => _bookmarkedBlogsBox;
+  void clearBookmarks() {
+    _bookmarkedBlogsList.clear();
+    notifyListeners();
+  }
+
+  List<Blog?> get bookmarkedBlogsList => _bookmarkedBlogsList;
 }

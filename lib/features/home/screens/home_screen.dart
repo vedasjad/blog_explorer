@@ -25,25 +25,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final HomeServices homeServices = HomeServices();
   final AppColors appColors = AppColors();
   final _blogsBox = Hive.box("blogs_box");
-  @override
-  void initState() {
-    super.initState();
-    _getItemsFromHive();
-  }
 
   Future<void> fetchBlogs() async {
     blogList = await homeServices.fetchBlogs(context: context);
-    bool doesContainBlog = _blogsBox.containsKey(blogList![0].id);
-    bool isBlogFav = false;
-    if (doesContainBlog) {
-      isBlogFav = _blogsBox.get(blogList![0].id)['isFavourite'];
-    }
     for (int i = 0; i < blogList!.length; i++) {
-      await _blogsBox.delete(blogList![i].id);
+      if (_blogsBox.containsKey(blogList![i].id)) {
+        await _blogsBox.delete(blogList![i].id);
+      }
       await _blogsBox.put(blogList![i].id, {
         'title': blogList![i].title,
         'imageUrl': blogList![i].imageUrl,
-        'isFavourite': (doesContainBlog) ? isBlogFav : false,
       });
     }
     setState(() {});
@@ -69,10 +60,25 @@ class _HomeScreenState extends State<HomeScreen> {
     blogList!.shuffle(Random.secure());
   }
 
+  int limit = 10;
+  @override
+  void initState() {
+    super.initState();
+    _getItemsFromHive();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(
+          Icons.messenger_outline_rounded,
+          size: 27,
+          color: AppColors().background,
+        ),
+      ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         scrolledUnderElevation: 3.0,
@@ -103,11 +109,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: GestureDetector(
-              onTap: () {},
-              child: Icon(
-                Icons.search,
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton.outlined(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                side: MaterialStatePropertyAll(
+                    BorderSide(color: AppColors().secondary.withOpacity(0.5))),
+              ),
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications_none_outlined,
                 size: 25,
                 color: appColors.text,
               ),
@@ -121,14 +136,22 @@ class _HomeScreenState extends State<HomeScreen> {
           physics: const BouncingScrollPhysics(),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Popular Today',
-                  style: GoogleFonts.getFont(
-                    "Ubuntu",
-                    fontSize: 20,
-                    color: appColors.text,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 25.0,
+                    horizontal: 45,
+                  ),
+                  child: Text(
+                    'Most Popular!',
+                    style: GoogleFonts.getFont(
+                      "Ubuntu",
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: appColors.text,
+                    ),
                   ),
                 ),
                 Padding(
@@ -137,37 +160,73 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: CarouselSlider.builder(
                     itemCount: 5,
+                    options: CarouselOptions(
+                      viewportFraction: 0.82,
+                      aspectRatio: 3 / 2,
+                      autoPlay: true,
+                      enlargeCenterPage: true,
+                      scrollPhysics: const BouncingScrollPhysics(),
+                    ),
                     itemBuilder: (BuildContext context, index, x) {
                       return CarouselWidget(
                         blog: blogList![index],
                       );
                     },
-                    options: CarouselOptions(
-                      autoPlay: true,
-                      enlargeCenterPage: true,
-                      scrollPhysics: const BouncingScrollPhysics(),
-                    ),
                   ),
                 ),
-                Text(
-                  'Explore',
-                  style: GoogleFonts.getFont(
-                    "Ubuntu",
-                    fontSize: 20,
-                    color: appColors.text,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    45,
+                    15,
+                    45,
+                    10,
+                  ),
+                  child: Text(
+                    'Recent Blogs',
+                    style: GoogleFonts.getFont(
+                      "Ubuntu",
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: appColors.text,
+                    ),
                   ),
                 ),
                 ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
+                  padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
                   shrinkWrap: true,
-                  itemCount: blogList!.length,
+                  itemCount: min(limit, blogList!.length),
                   semanticChildCount: 10,
                   itemBuilder: (BuildContext context, index) {
                     if (index < 5) return const SizedBox();
                     return BlogWidget(blog: blogList![index]);
                   },
                 ),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (limit + 10 < blogList!.length) {
+                        setState(() {
+                          limit += 10;
+                        });
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                        'Show more',
+                        style: GoogleFonts.getFont(
+                          'Ubuntu',
+                          fontSize: 18,
+                          color: AppColors().background,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                )
               ],
             ),
           ),

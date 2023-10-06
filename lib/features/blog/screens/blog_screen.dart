@@ -22,7 +22,7 @@ class BlogScreen extends StatefulWidget {
 
 class _BlogScreenState extends State<BlogScreen> {
   final BlogServices blogServices = BlogServices();
-  List<Blog> bookmarkedList = [];
+  List<Blog?> bookmarkedList = [];
   String blogText = '';
 
   @override
@@ -164,7 +164,7 @@ class _BlogScreenState extends State<BlogScreen> {
                               ),
                             )
                           : Text(
-                              'Sorry! Couldn\'t generate text for blog',
+                              'Sorry! It\'s taking some time',
                               textAlign: TextAlign.justify,
                               style: GoogleFonts.getFont(
                                 'Ubuntu',

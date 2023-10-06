@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../../common/colors.dart';
 import '../../../models/blog.dart';
-import '../widgets/bookmarked_widget.dart';
+import '../../home/widgets/blog_widget.dart';
 
 class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({super.key});
@@ -17,7 +17,7 @@ class BookmarkScreen extends StatefulWidget {
 }
 
 class _BookmarkScreenState extends State<BookmarkScreen> {
-  List<Blog> bookmarkedList = [];
+  List<Blog?> bookmarkedList = [];
   @override
   void initState() {
     super.initState();
@@ -53,13 +53,99 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
         backgroundColor: AppColors().background,
         actions: [
           Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: GestureDetector(
-              onTap: () {},
-              child: Icon(
-                Icons.search,
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton.outlined(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                side: MaterialStatePropertyAll(
+                    BorderSide(color: AppColors().text.withOpacity(0.5))),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    backgroundColor: AppColors().lightBackground,
+                    icon: const Icon(
+                      Icons.delete_forever_outlined,
+                      size: 30,
+                    ),
+                    iconColor: AppColors().secondary,
+                    title: const Text(
+                      'Clear Bookmarks!',
+                    ),
+                    titleTextStyle: GoogleFonts.getFont(
+                      'Montserrat',
+                      color: AppColors().secondary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    content: const Text(
+                      'All the bookmarks will be removed permanently',
+                      textAlign: TextAlign.center,
+                    ),
+                    contentTextStyle: GoogleFonts.getFont(
+                      'Montserrat',
+                      fontSize: 12,
+                      color: AppColors().text,
+                    ),
+                    actions: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                'Cancel',
+                                style: GoogleFonts.getFont(
+                                  'Montserrat',
+                                  fontSize: 15,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Provider.of<BookmarkedListProvider>(context,
+                                        listen: false)
+                                    .bookmarkedBlogsList
+                                    .clear();
+                                Provider.of<BookmarkedListProvider>(context,
+                                        listen: false)
+                                    .clearBookmarks();
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'Ok',
+                                style: GoogleFonts.getFont(
+                                  'Montserrat',
+                                  fontSize: 15,
+                                  color: AppColors().secondary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.delete_forever_outlined,
                 size: 25,
-                color: AppColors().text,
+                color: AppColors().secondary,
               ),
             ),
           ),
@@ -99,7 +185,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                           SnackBar(
                             backgroundColor: AppColors().secondary,
                             content:
-                                Text('Removed ${bookmarkedList[index].title}'),
+                                Text('Removed ${bookmarkedList[index]!.title}'),
                             duration: const Duration(milliseconds: 300),
                             action: SnackBarAction(
                               label: 'Undo',
@@ -116,11 +202,11 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                       if (direction == DismissDirection.endToStart) {
                         Provider.of<BookmarkedListProvider>(context,
                                 listen: false)
-                            .unMarkBlog(bookmarkedList[index]);
+                            .unMarkBlog(bookmarkedList[index]!);
                       }
                     },
-                    child: BookmarkedWidget(
-                      blog: bookmarkedList[index],
+                    child: BlogWidget(
+                      blog: bookmarkedList[index]!,
                     ),
                   );
                 },
@@ -130,7 +216,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                   "No Bookmarks Added",
                   style: GoogleFonts.getFont(
                     "Montserrat",
-                    fontSize: 30,
+                    fontSize: 27,
                     color: AppColors().text,
                   ),
                 ),

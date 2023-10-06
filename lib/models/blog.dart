@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:hive/hive.dart';
 
+part 'blog.g.dart';
+
 @HiveType(typeId: 1)
 class Blog {
   @HiveField(0)
