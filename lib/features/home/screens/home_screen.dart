@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:blog_explorer/features/home/services/home_services.dart';
+import 'package:blog_explorer/providers/blogs_provider.dart';
+import 'package:blog_explorer/providers/bookmarks_provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 import '../../../common/colors.dart';
 import '../../../models/blog.dart';
@@ -13,7 +15,6 @@ import '../widgets/blog_widget.dart';
 import '../widgets/carousel_widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const String routeName = '/home';
   const HomeScreen({super.key});
 
   @override
@@ -21,50 +22,26 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Blog>? blogList;
+  List<Blog> blogList = [];
+  List<Blog> bookmarkList = [];
   final HomeServices homeServices = HomeServices();
   final AppColors appColors = AppColors();
-  final _blogsBox = Hive.box("blogs_box");
-
-  Future<void> fetchBlogs() async {
-    blogList = await homeServices.fetchBlogs(context: context);
-    for (int i = 0; i < blogList!.length; i++) {
-      if (_blogsBox.containsKey(blogList![i].id)) {
-        await _blogsBox.delete(blogList![i].id);
-      }
-      await _blogsBox.put(blogList![i].id, {
-        'title': blogList![i].title,
-        'imageUrl': blogList![i].imageUrl,
-      });
-    }
-    setState(() {});
-  }
-
-  void _getItemsFromHive() async {
-    final data = _blogsBox.keys.map((key) {
-      final item = _blogsBox.get(key);
-      return Blog(
-        id: key,
-        imageUrl: item['imageUrl'],
-        title: item['title'],
-      );
-    }).toList();
-    if (data.isEmpty) {
-      await fetchBlogs();
-    } else {
-      debugPrint("Blogs available in Local Storage");
-      setState(() {
-        blogList = data.reversed.toList();
-      });
-    }
-    blogList!.shuffle(Random.secure());
-  }
 
   int limit = 10;
   @override
   void initState() {
     super.initState();
-    _getItemsFromHive();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (blogList.isEmpty && bookmarkList.isEmpty) {
+      Provider.of<BlogsProvider>(context).getBlogsFromHive(context);
+      Provider.of<BookmarksProvider>(context).getBookmarksFromHive();
+      blogList = Provider.of<BlogsProvider>(context).blogsList;
+      bookmarkList = Provider.of<BookmarksProvider>(context).bookmarksList;
+    }
   }
 
   @override
@@ -154,26 +131,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                  ),
-                  child: CarouselSlider.builder(
-                    itemCount: 5,
-                    options: CarouselOptions(
-                      viewportFraction: 0.82,
-                      aspectRatio: 3 / 2,
-                      autoPlay: true,
-                      enlargeCenterPage: true,
-                      scrollPhysics: const BouncingScrollPhysics(),
+                if (blogList.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
                     ),
-                    itemBuilder: (BuildContext context, index, x) {
-                      return CarouselWidget(
-                        blog: blogList![index],
-                      );
-                    },
+                    child: CarouselSlider.builder(
+                      itemCount: 5,
+                      options: CarouselOptions(
+                        viewportFraction: 0.82,
+                        aspectRatio: 3 / 2,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        scrollPhysics: const BouncingScrollPhysics(),
+                      ),
+                      itemBuilder: (BuildContext context, index, x) {
+                        return CarouselWidget(
+                          blog: blogList[index],
+                        );
+                      },
+                    ),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     45,
@@ -191,39 +169,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
-                  shrinkWrap: true,
-                  itemCount: min(limit, blogList!.length),
-                  semanticChildCount: 10,
-                  itemBuilder: (BuildContext context, index) {
-                    if (index < 5) return const SizedBox();
-                    return BlogWidget(blog: blogList![index]);
-                  },
-                ),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (limit + 10 < blogList!.length) {
-                        setState(() {
-                          limit += 10;
-                        });
-                      }
+                if (blogList.isNotEmpty)
+                  ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
+                    shrinkWrap: true,
+                    itemCount: min(limit, blogList.length),
+                    semanticChildCount: 10,
+                    itemBuilder: (BuildContext context, index) {
+                      if (index < 5) return const SizedBox();
+                      return BlogWidget(blog: blogList[index]);
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        'Show more',
-                        style: GoogleFonts.getFont(
-                          'Ubuntu',
-                          fontSize: 18,
-                          color: AppColors().background,
+                  ),
+                if (limit < blogList.length)
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (limit + 10 < blogList.length) {
+                          setState(() {
+                            limit += 10;
+                          });
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          'Show more',
+                          style: GoogleFonts.getFont(
+                            'Ubuntu',
+                            fontSize: 18,
+                            color: AppColors().background,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
                 const SizedBox(
                   height: 10,
                 )

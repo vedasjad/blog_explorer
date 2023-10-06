@@ -3,27 +3,25 @@ import 'package:hive/hive.dart';
 
 import '../models/blog.dart';
 
-List<Blog> _getItemsFromHive() {
-  final Box<dynamic> bookmarksBox = Hive.box('bookmarksBox');
-  final data = bookmarksBox.keys.map((key) {
-    final Blog item = bookmarksBox.get(key);
-    return Blog(
-      id: key.toString(),
-      imageUrl: item.imageUrl,
-      title: item.title,
-    );
-  }).toList();
-  return data;
-}
-
 class BookmarksProvider extends ChangeNotifier {
-  List<Blog> _bookmarksList = _getItemsFromHive();
+  List<Blog> _bookmarksList = [];
   final Box<dynamic> _bookmarksBox = Hive.box('bookmarksBox');
+
+  void getBookmarksFromHive() {
+    _bookmarksList = _bookmarksBox.keys.map((key) {
+      final Blog item = _bookmarksBox.get(key);
+      return Blog(
+        id: key.toString(),
+        imageUrl: item.imageUrl,
+        title: item.title,
+      );
+    }).toList();
+  }
 
   void bookmarkBlog(Blog blog) {
     _bookmarksList.add(blog);
     notifyListeners();
-    _bookmarksBox.add(blog);
+    _bookmarksBox.put(blog, blog);
   }
 
   void unMarkBlog(Blog blog) {
@@ -38,5 +36,5 @@ class BookmarksProvider extends ChangeNotifier {
     _bookmarksBox.clear();
   }
 
-  List<Blog> get bookmarkedBlogsList => _bookmarksList;
+  List<Blog> get bookmarksList => _bookmarksList;
 }

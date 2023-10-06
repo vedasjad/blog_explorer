@@ -1,6 +1,7 @@
 import 'package:blog_explorer/common/colors.dart';
 import 'package:blog_explorer/models/blog.dart';
-import 'package:blog_explorer/providers/bookmarked_list_provider.dart';
+import 'package:blog_explorer/providers/blogs_provider.dart';
+import 'package:blog_explorer/providers/bookmarks_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -23,8 +24,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<BookmarksProvider>(
-      create: (context) => BookmarksProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => BlogsProvider()),
+        ChangeNotifierProvider(create: (context) => BookmarksProvider()),
+      ],
       child: MaterialApp(
         title: 'Scrollere',
         debugShowCheckedModeBanner: false,

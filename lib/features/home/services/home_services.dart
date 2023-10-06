@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:blog_explorer/models/blog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../common/error_handling.dart';
@@ -13,8 +14,7 @@ class HomeServices {
   }) async {
     List<Blog> blogList = [];
     const String url = 'https://intent-kit-16.hasura.app/api/rest/blogs';
-    const String adminSecret =
-        '32qR4KmXOIpsGPQKMqEJHGJS27G5s7HdSKO3gdtQd2kv5e852SiYwWNfxkZOBuQ6';
+    final String adminSecret = dotenv.get('BLOGSAPIKEY');
     try {
       http.Response res = await http.get(
         Uri.parse(url),
@@ -23,6 +23,7 @@ class HomeServices {
           'x-hasura-admin-secret': adminSecret,
         },
       );
+      debugPrint(res.body);
       httpErrorHandle(
         response: res,
         context: context,

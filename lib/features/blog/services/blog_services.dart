@@ -30,7 +30,7 @@ class BlogServices {
     await dotenv.load();
     String textForBlog = '';
     const String url = 'https://api.textcortex.com/v1/texts/expansions';
-    String apiKey = dotenv.get('APIKEY');
+    String apiKey = dotenv.get('CONTENTAPIKEY');
     Map<String, dynamic> jsonMap = {
       "max_tokens": 512,
       "model": "chat-sophos-1",
@@ -73,35 +73,35 @@ class BlogServices {
       // });
 
       //SAMPLE MODIFIED RESPONSE
-      Response res = Response(
-        statusCode: 200,
-        body: jsonEncode({
-          "data": {
-            "outputs": [
-              {
-                "index": 0,
-                "text": "A beautiful sentence hand crafted by TextCortex."
-              }
-            ],
-            "remaining_credits": 0
-          },
-          "status": "success"
-        }),
-      );
+      // Response res = Response(
+      //   statusCode: 200,
+      //   body: jsonEncode({
+      //     "data": {
+      //       "outputs": [
+      //         {
+      //           "index": 0,
+      //           "text": "A beautiful sentence hand crafted by TextCortex."
+      //         }
+      //       ],
+      //       "remaining_credits": 0
+      //     },
+      //     "status": "success"
+      //   }),
+      // );
 
-      // var res = await apiRequest(url, jsonMap, apiKey);
+      var res = await apiRequest(url, jsonMap, apiKey);
       // debugPrint(apiKey);
-      debugPrint(res.body);
+      // debugPrint(res.body);
       httpClientErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
           textForBlog = jsonDecode(res.body)['data']['outputs'][0]['text'];
-          debugPrint(textForBlog);
+          // debugPrint(textForBlog);
         },
       );
     } catch (e) {
-      debugPrint(e.toString());
+      // debugPrint(e.toString());
       showSnackBar(context, e.toString());
     }
     return textForBlog;

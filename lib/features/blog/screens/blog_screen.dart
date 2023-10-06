@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common/colors.dart';
 import '../../../common/utils.dart';
 import '../../../models/blog.dart';
-import '../../../providers/bookmarked_list_provider.dart';
+import '../../../providers/bookmarks_provider.dart';
 import '../services/blog_services.dart';
 
 class BlogScreen extends StatefulWidget {
@@ -54,8 +55,8 @@ class _BlogScreenState extends State<BlogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bookmarkedList = Provider.of<BookmarksProvider>(context, listen: true)
-        .bookmarkedBlogsList;
+    bookmarkedList =
+        Provider.of<BookmarksProvider>(context, listen: true).bookmarksList;
     return Scaffold(
         backgroundColor: AppColors().background,
         resizeToAvoidBottomInset: true,
@@ -85,17 +86,8 @@ class _BlogScreenState extends State<BlogScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomRight: Radius.circular(50),
-                  ),
-                  child: Image.network(
-                    widget.blog.imageUrl,
-                  ),
-                ),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -112,7 +104,7 @@ class _BlogScreenState extends State<BlogScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "By: Ved",
+                            "Blog Written by TextCortex API",
                             textAlign: TextAlign.start,
                             style: GoogleFonts.getFont(
                               'Ubuntu',
@@ -148,9 +140,56 @@ class _BlogScreenState extends State<BlogScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ClipRRect(
+                  // borderRadius: const BorderRadius.only(
+                  //   bottomRight: Radius.circular(50),
+                  // ),
+                  child: Image.network(
+                    widget.blog.imageUrl,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Shimmer.fromColors(
+                        baseColor: AppColors().background,
+                        highlightColor: AppColors().lightBackground,
+                        child: Container(
+                          constraints: const BoxConstraints.expand(),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, child, loadingProgress) {
+                      return Container(
+                        constraints: const BoxConstraints.expand(),
+                        color: AppColors().lightBackground,
+                        child: Center(
+                          child: Text(
+                            'Image Not Found',
+                            style: GoogleFonts.getFont(
+                              'Montserrat',
+                              fontSize: 30,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       (blogText != '')
                           ? Text(
                               blogText,

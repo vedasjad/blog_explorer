@@ -5,7 +5,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../common/colors.dart';
 import '../../../models/blog.dart';
-import '../../../providers/bookmarked_list_provider.dart';
+import '../../../providers/bookmarks_provider.dart';
 import '../../blog/screens/blog_screen.dart';
 
 class CarouselWidget extends StatefulWidget {
@@ -25,8 +25,8 @@ class _CarouselWidgetState extends State<CarouselWidget> {
 
   @override
   Widget build(BuildContext context) {
-    bookmarkedList = Provider.of<BookmarksProvider>(context, listen: true)
-        .bookmarkedBlogsList;
+    bookmarkedList =
+        Provider.of<BookmarksProvider>(context, listen: true).bookmarksList;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return GestureDetector(
@@ -109,17 +109,6 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.share_rounded,
-                              size: 25,
-                              color: AppColors().text,
-                            ),
-                          ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: IconButton(

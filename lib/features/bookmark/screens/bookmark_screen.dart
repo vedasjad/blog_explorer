@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:blog_explorer/providers/bookmarked_list_provider.dart';
+import 'package:blog_explorer/providers/bookmarks_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../common/colors.dart';
 import '../../../models/blog.dart';
-import '../../home/widgets/blog_widget.dart';
+import '../widgets/bookmark_widget.dart';
 
 class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({super.key});
@@ -25,8 +25,9 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bookmarkedList = Provider.of<BookmarksProvider>(context, listen: true)
-        .bookmarkedBlogsList;
+    bookmarkedList =
+        Provider.of<BookmarksProvider>(context, listen: true).bookmarksList;
+    bookmarkedList = bookmarkedList.reversed.toList();
     return Scaffold(
       backgroundColor: AppColors().background,
       resizeToAvoidBottomInset: true,
@@ -67,79 +68,8 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    backgroundColor: AppColors().lightBackground,
-                    icon: const Icon(
-                      Icons.delete_forever_outlined,
-                      size: 30,
-                    ),
-                    iconColor: AppColors().secondary,
-                    title: const Text(
-                      'Clear Bookmarks!',
-                    ),
-                    titleTextStyle: GoogleFonts.getFont(
-                      'Montserrat',
-                      color: AppColors().secondary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    content: const Text(
-                      'All the bookmarks will be removed permanently',
-                      textAlign: TextAlign.center,
-                    ),
-                    contentTextStyle: GoogleFonts.getFont(
-                      'Montserrat',
-                      fontSize: 12,
-                      color: AppColors().text,
-                    ),
-                    actions: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(
-                                'Cancel',
-                                style: GoogleFonts.getFont(
-                                  'Montserrat',
-                                  fontSize: 15,
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Provider.of<BookmarksProvider>(context,
-                                        listen: false)
-                                    .bookmarkedBlogsList
-                                    .clear();
-                                Provider.of<BookmarksProvider>(context,
-                                        listen: false)
-                                    .clearBookmarks();
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                'Ok',
-                                style: GoogleFonts.getFont(
-                                  'Montserrat',
-                                  fontSize: 15,
-                                  color: AppColors().secondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
+                  builder: (BuildContext context) =>
+                      const DeleteBookmarksDialog(),
                 );
               },
               icon: Icon(
@@ -204,7 +134,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                             .unMarkBlog(bookmarkedList[index]);
                       }
                     },
-                    child: BlogWidget(
+                    child: BookmarkWidget(
                       blog: bookmarkedList[index],
                     ),
                   );
@@ -221,6 +151,84 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                 ),
               ),
       ),
+    );
+  }
+}
+
+class DeleteBookmarksDialog extends StatelessWidget {
+  const DeleteBookmarksDialog({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors().lightBackground,
+      icon: const Icon(
+        Icons.delete_forever_outlined,
+        size: 30,
+      ),
+      iconColor: AppColors().secondary,
+      title: const Text(
+        'Clear Bookmarks!',
+      ),
+      titleTextStyle: GoogleFonts.getFont(
+        'Montserrat',
+        color: AppColors().secondary,
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+      ),
+      content: const Text(
+        'All the bookmarks will be removed permanently',
+        textAlign: TextAlign.center,
+      ),
+      contentTextStyle: GoogleFonts.getFont(
+        'Montserrat',
+        fontSize: 12,
+        color: AppColors().text,
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.getFont(
+                    'Montserrat',
+                    fontSize: 15,
+                    color: Colors.green,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Provider.of<BookmarksProvider>(context, listen: false)
+                      .clearBookmarks();
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Ok',
+                  style: GoogleFonts.getFont(
+                    'Montserrat',
+                    fontSize: 15,
+                    color: AppColors().secondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )
+      ],
     );
   }
 }
