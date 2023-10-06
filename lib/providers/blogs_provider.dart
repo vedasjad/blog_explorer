@@ -23,6 +23,7 @@ class BlogsProvider extends ChangeNotifier {
         'imageUrl': blogsList[i].imageUrl,
       });
     }
+    notifyListeners();
   }
 
   void getBlogsFromHive(BuildContext context) async {
@@ -39,6 +40,7 @@ class BlogsProvider extends ChangeNotifier {
     }).toList();
     debugPrint("Blogs available in Local Storage");
     _blogsList.shuffle(Random.secure());
+    notifyListeners();
   }
 
   List<Blog> get blogsList => _blogsList;

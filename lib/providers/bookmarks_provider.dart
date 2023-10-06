@@ -16,6 +16,7 @@ class BookmarksProvider extends ChangeNotifier {
         title: item.title,
       );
     }).toList();
+    notifyListeners();
   }
 
   void bookmarkBlog(Blog blog) {

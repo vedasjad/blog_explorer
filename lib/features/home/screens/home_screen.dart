@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:blog_explorer/features/home/services/home_services.dart';
+import 'package:blog_explorer/features/home/widgets/carousel_widget.dart';
 import 'package:blog_explorer/providers/blogs_provider.dart';
 import 'package:blog_explorer/providers/bookmarks_provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -12,7 +13,8 @@ import '../../../common/colors.dart';
 import '../../../models/blog.dart';
 import '../../bookmark/screens/bookmark_screen.dart';
 import '../widgets/blog_widget.dart';
-import '../widgets/carousel_widget.dart';
+import '../widgets/loaderBlogWidget.dart';
+import '../widgets/loaderCarouselWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -131,27 +133,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                if (blogList.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                    ),
-                    child: CarouselSlider.builder(
-                      itemCount: 5,
-                      options: CarouselOptions(
-                        viewportFraction: 0.82,
-                        aspectRatio: 3 / 2,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        scrollPhysics: const BouncingScrollPhysics(),
-                      ),
-                      itemBuilder: (BuildContext context, index, x) {
-                        return CarouselWidget(
-                          blog: blogList[index],
-                        );
-                      },
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
                   ),
+                  child: CarouselSlider.builder(
+                    itemCount: 5,
+                    options: CarouselOptions(
+                      viewportFraction: 0.82,
+                      aspectRatio: 3 / 2,
+                      autoPlay: true,
+                      enlargeCenterPage: true,
+                      scrollPhysics: const BouncingScrollPhysics(),
+                    ),
+                    itemBuilder: (BuildContext context, index, x) {
+                      return (blogList.isNotEmpty)
+                          ? CarouselWidget(
+                              blog: blogList[index],
+                            )
+                          : const LoaderCarouselWidget();
+                    },
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     45,
@@ -177,8 +180,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: min(limit, blogList.length),
                     semanticChildCount: 10,
                     itemBuilder: (BuildContext context, index) {
-                      if (index < 5) return const SizedBox();
-                      return BlogWidget(blog: blogList[index]);
+                      return (blogList.isNotEmpty)
+                          ? (index < 5)
+                              ? const SizedBox()
+                              : BlogWidget(
+                                  blog: blogList[index],
+                                )
+                          : const LoaderBlogWidget();
                     },
                   ),
                 if (limit < blogList.length)
