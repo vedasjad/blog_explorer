@@ -30,7 +30,7 @@ class BlogServices {
     await dotenv.load();
     String textForBlog = '';
     const String url = 'https://api.textcortex.com/v1/texts/expansions';
-    String apiKey = dotenv.get('CONTENTAPIKEY');
+    String apiKey = dotenv.get('APIKEY');
     Map<String, dynamic> jsonMap = {
       "max_tokens": 512,
       "model": "chat-sophos-1",
